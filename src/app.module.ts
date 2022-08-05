@@ -26,7 +26,7 @@ import { Category } from './modules/category/entities/category.entity'
 						? configService.get<string>('DATABASE_MAIN_HOST_LOCAL')
 						: configService.get<string>('DATABASE_MAIN_HOST'),
 					entities: [Category, News],
-					synchronize: true,
+					// synchronize: true --- use migrations instead
 					relationLoadStrategy: 'query',
 				}
 			},

@@ -1,6 +1,7 @@
-import { Controller, Get, HttpException, HttpStatus, Req } from '@nestjs/common'
+import { Controller, Get, Param, Req } from '@nestjs/common'
 import { NewsService } from './news.service'
 import { Request } from 'express'
+import { extractParamsFromRequestHelper } from 'src/helpers/extract-params-from-request.helper'
 
 @Controller('/news')
 export class NewsController {
@@ -8,18 +9,32 @@ export class NewsController {
 
 	@Get()
 	async getAll(@Req() req: Request) {
-		const page: number = parseInt(req.query.page as any) || 0
-		const limit: number = parseInt(req.query.limit as any) || 9
-		const search: string = (req.query.limit as any) || ''
-		const categoryId: string = req.query.category as any
+		const { page, limit, search } = extractParamsFromRequestHelper(req)
 
-		if (!categoryId) {
-			throw new HttpException(
-				"Category  wasn't provided",
-				HttpStatus.BAD_REQUEST,
-			)
-		}
+		return await this.newsService.getAll({
+			page,
+			limit,
+			search,
+		})
+	}
 
-		return await this.newsService.getAll({ page, limit, search, categoryId })
+	@Get(':newsId')
+	async getOneById(@Param('newsId') newsId: string) {
+		return await this.newsService.getOneById(newsId)
+	}
+
+	@Get('category/:categoryId')
+	async getAllByCategoryId(
+		@Param('categoryId') categoryId: string,
+		@Req() req: Request,
+	) {
+		const { page, limit, search } = extractParamsFromRequestHelper(req)
+
+		return await this.newsService.getAllByCategoryId({
+			page,
+			limit,
+			search,
+			categoryId,
+		})
 	}
 }
