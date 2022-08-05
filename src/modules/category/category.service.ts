@@ -10,7 +10,7 @@ export class CategoryService {
 		private readonly categoryRepository: Repository<Category>,
 	) {}
 
-	async getAll() {
+	async getAll(): Promise<Category[]> {
 		const categories = await this.categoryRepository.find()
 		return categories
 	}

@@ -1,4 +1,5 @@
 import {
+	Column,
 	CreateDateColumn,
 	Entity,
 	Generated,
@@ -20,6 +21,12 @@ export class News {
 		onDelete: 'SET NULL',
 	})
 	category?: Category
+
+	@Column({ nullable: true })
+	title: string
+
+	@Column({ nullable: true })
+	description: string
 
 	@CreateDateColumn({
 		type: 'timestamp',

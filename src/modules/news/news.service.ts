@@ -7,11 +7,43 @@ import { News } from './entities/news.entity'
 export class NewsService {
 	constructor(
 		@InjectRepository(News)
-		private readonly NewsRepository: Repository<News>,
+		private readonly newsRepository: Repository<News>,
 	) {}
 
-	async getAll() {
-		const news = await this.NewsRepository.find()
-		return news
+	async getAll({
+		page,
+		limit,
+		search,
+		categoryId,
+	}: {
+		page: number
+		limit: number
+		search: string
+		categoryId: string
+	}) {
+		const builder = this.newsRepository
+			.createQueryBuilder('news')
+			.innerJoin('news.category', 'category', 'category.id = :categoryId')
+
+		if (search) {
+			builder.where(
+				'news.title LIKE :search OR news.description LIKE :search',
+				{ search },
+			)
+		}
+
+		builder.offset(page * limit).limit(limit)
+
+		const total = await builder.getCount()
+		const data = await builder.getMany()
+
+		return {
+			data,
+			total,
+			page,
+			limit,
+		}
+
+		return
 	}
 }
